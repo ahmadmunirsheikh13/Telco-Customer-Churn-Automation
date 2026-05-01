@@ -1,36 +1,42 @@
 import pandas as pd
 import numpy as np
 df=pd.read_excel('Telco_customer_churn.xlsx')
-# renaming columns to remove spaces and make them more consistent
-df.rename(columns=lambda x: x.strip().replace(' ','_').lower(), inplace=True)
-print(f"Printing the first 5 rows of the dataset:\n{df.head()}")
-# Checking the structure of the dataset
-print(f"Dataset info:\n{df.info()}")
-# To remove extra spaces from each column data
-df[df.select_dtypes(include=['object','string']).columns]=df.select_dtypes(include=['object','string']).apply(lambda x: x.str.strip())
-# Making sure numeric columns are in correct format and handling any non-numeric values by converting them to NaN and filling with 0
-numeric_cols=['churn_score','monthly_charges','total_charges','tenure_months']
-for col in numeric_cols:
-    df[col]=pd.to_numeric(df[col], errors='coerce')
-    df[col]=df[col].fillna(df[col].median())
-# Checking & removing duplicate customers based on 'Customer ID'
-if df['customerid'].duplicated().sum()>0:
-    print("Duplicate customers found. Removing duplicates based on 'Customer ID'.")
-    df=df.sort_values('churn_score', ascending=False)
-    df=df.drop_duplicates(subset='customerid', keep='first')
-else:
-    print("No duplicate customers found based on 'Customer ID'.")
-print(f"Dataset after removing duplicates:\n{df.head()}")
-# Summary statistics of the dataset
-print(f"Summary statistics of the dataset:\n{df.describe()}")
-# Checking for missing values in the dataset
-print(f"Number of missing values in each column:\n{df.isnull().sum()}")
-# Checking Relationship between Churn Score and Churn Reason
-print(df[df['churn_reason'].isnull()]['churn_score'].describe())
-# Adding reasons for customers with missing churn reason
-df['churn_reason'] = df['churn_reason'].replace('', pd.NA).fillna('Unknown')
-# Making Rules for Churn Status based on Churn Reason
-df['churn_status']=pd.cut(df['churn_score'], bins=[-1,35,65,float('inf')], labels=['Low Risk','Potential Risk','High Risk'])
-print(f"Updated dataset with Churn Status:\n{df[['churn_score','churn_status']].head()}") 
-# Creating Cleaned csv file
-df.to_csv('Cleaned_Telco_customer_churn.csv', index=False)
+# Converting column name to lowercase and replacing spaces with underscores
+df.columns=df.columns.str.lower().str.replace(' ','_')
+print(df.head(10))
+# Confirming data types of numeric columns and checking for any inconsistencies
+print(f"data type of total_charges: {df['total_charges'].dtype}")
+print(f"data type of monthly_charges: {df['monthly_charges'].dtype}")
+print(f"data type of churn_score: {df['churn_score'].dtype}")
+# Stripping leading and trailing spaces 
+df['total_charges']=df['total_charges'].astype(str).str.strip()
+df['total_charges']=df['total_charges'].replace('',np.nan)
+# Converting object to numeric (total_charges ), coercing errors to NaN
+df['total_charges']=pd.to_numeric(df['total_charges'],errors='coerce')
+# Checking for missing values
+print(df.isnull().sum())
+# Filling missing values in total charges with the mean of the column
+df.loc[df['tenure_months']==0,'total_charges']=0
+df['total_charges']=df['total_charges'].fillna(df['total_charges'].median())
+print(df.isnull().sum())
+# Checking for duplicates in customerid column
+print(df['customerid'].duplicated().sum())
+# Dropping duplicates if any
+df.drop_duplicates(subset='customerid',inplace=True)
+# Filling missing values in churn reason with Unknown
+df['churn_reason']=df['churn_reason'].fillna('Unknown')
+# Ensuring missing values again in dataset
+print(df.isnull().sum())
+# Performin EDA on churn score to understand distribution and central tendency
+print(df.describe()[['churn_score']])
+# Performing IQR method to identify outliers in churn score
+Q1=df['churn_score'].quantile(0.25)
+Q3=df['churn_score'].quantile(0.75)
+IQR=Q3-Q1
+Lower_bound=Q1-1.5*IQR
+Upper_bound=Q3+1.5*IQR
+print(f"Lower Bound: {Lower_bound}")
+print(f"Upper Bound: {Upper_bound}")    
+# Creating new column for risk based on churn score
+df['churn_status']=pd.cut(df['churn_score'],bins=[-1,Q1,Q3,float('inf')],labels=['Low Risk','Medium Risk','High Risk'])
+df.to_csv('cleaned_telco_customer_churn.csv',index=False)
