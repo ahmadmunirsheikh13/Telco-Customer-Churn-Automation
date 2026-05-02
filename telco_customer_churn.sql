@@ -49,11 +49,11 @@ SELECT churn_status,SUM(monthly_charges) as monthly_revenue
 from telco_churn where churn_value=0 
 group by churn_status;
  --  2- Active customers with highest churn risk score
+ CREATE OR REPLACE VIEW high_risk_customers as
  SELECT customerid,country,state,city,gender,tenure_months,monthly_charges,total_charges,churn_score,churn_status
  from telco_churn 
- where churn_value=0
- Order by churn_score DESC
- limit 20;
+ where churn_value=0;
+ SELECT * FROM  high_risk_customers;
  -- 3- Filtering out senior citizens who are still in network 
 SELECT customerid,gender,tenure_months,contract,monthly_charges,churn_status 
 from telco_churn
@@ -72,21 +72,24 @@ from telco_churn
  group by churn_reason 
  order by total_customers_churned DESC; 
  -- 6- Calculating Revenue loss from each city
+ CREATE OR REPLACE VIEW revenue_loss_by_city as
  SELECT city, SUM(monthly_charges) as revenue_loss 
  from telco_churn 
  where churn_value=1
- group by city 
- order by revenue_loss DESC;
+ group by city ;
+ SELECT * FROM  revenue_loss_by_city;
  -- 7- Calculating AVG revenue overall on the basis of internet_service & tech support and ranked them
  SELECT internet_service,tech_support,AVG(monthly_charges) as avg_monthly_revenue,
  RANK()OVER(Order by AVG(monthly_charges) DESC) as revenue_rank
  from telco_churn 
  group by internet_service,tech_support;
   -- 8- Calculating Churn rate by contract
+  CREATE OR REPLACE VIEW churn_rate as
 SELECT contract,Count(*) as total_customers,sum(churn_value) as churned,
 Round(SUM(churn_value)*100.0/Count(*),2) as churn_rate
 from telco_churn
 Group BY contract;
+SELECT * FROM  churn_rate;
  -- 9- How much avg revenue is generating from our partners monthly in each city
 SELECT city,AVG(monthly_charges) as revenue_generated
 from telco_churn
@@ -94,12 +97,13 @@ where partner='Yes'
 group by city
 order by revenue_generated DESC;
  -- 10- High value lost customers
+CREATE OR REPLACE VIEW high_value_lost_customer as
  SELECT customerid,total_charges,monthly_charges
 FROM telco_churn
-WHERE churn_value = 1
-ORDER BY total_charges DESC
-LIMIT 10;
+WHERE churn_value = 1;
+SELECT * FROM  high_value_lost_customer;
 -- 11- Cohort Analysis (Tenure-based Grouping)
+CREATE OR REPLACE VIEW cohort_analysis as 
 SELECT
      CASE WHEN tenure_months BETWEEN 1 AND 12 THEN '0-1 Year' 
           WHEN tenure_months BETWEEN 13 AND 24 THEN '1-2 Year'
@@ -112,15 +116,20 @@ SELECT
      SUM(churn_value) as actual_churn
     from telco_churn
     group by cohort_group;
+    SELECT * FROM  cohort_analysis;
  -- 12- Retention Rate by contract type
+ CREATE OR REPLACE VIEW retention_rate as
  SELECT contract, count(*) as total_customers,
  SUM(CASE WHEN churn_value=0 then 1 else 0 END) as retained_customer,
  SUM(CASE WHEN churn_value=1 then 1 else 0 END) as churned_customer,
  Round(sum(case when churn_value=0 then 1 else 0 end)*100.0/count(*),2) as retention_rate
  from telco_churn
  group by contract;
+ SELECT * FROM  retention_rate;
   -- Calculating Cumulating (running) total revenue based on tenure_months
+  CREATE OR REPLACE VIEW cumulative_revenue AS 
   SELECT tenure_months,SUM(monthly_charges) as monthly_revenue,
   SUM(SUM(monthly_charges)) OVER(ORDER BY tenure_months) as total_revenue
   from telco_churn
   group by tenure_months;
+SELECT * FROM  cumulative_revenue
