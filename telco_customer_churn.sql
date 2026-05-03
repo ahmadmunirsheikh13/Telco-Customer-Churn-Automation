@@ -44,6 +44,8 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 rows;
 SELECT * FROM telco_churn limit 10; 
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Ahmad02@@';
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'Ahmad02@@';
  --  1- Calculating Revenue
 SELECT churn_status,SUM(monthly_charges) as monthly_revenue 
 from telco_churn where churn_value=0 
@@ -52,7 +54,8 @@ group by churn_status;
  CREATE OR REPLACE VIEW high_risk_customers as
  SELECT customerid,country,state,city,gender,tenure_months,monthly_charges,total_charges,churn_score,churn_status
  from telco_churn 
- where churn_value=0;
+ where churn_value=0 AND churn_score>=80
+ ORDER BY churn_score DESC;
  SELECT * FROM  high_risk_customers;
  -- 3- Filtering out senior citizens who are still in network 
 SELECT customerid,gender,tenure_months,contract,monthly_charges,churn_status 

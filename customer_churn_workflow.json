@@ -1,0 +1,713 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -352,
+        -144
+      ],
+      "id": "5a9bc1df-5d83-4c37-adc2-439a9a876435",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "816350dd-1d33-4609-9295-89fe237c1232",
+              "name": "customerid",
+              "value": "={{ $json.customerid }}",
+              "type": "string"
+            },
+            {
+              "id": "71b06cda-aeba-48b9-b660-2b611f051e35",
+              "name": "country",
+              "value": "={{ $json.country }}",
+              "type": "string"
+            },
+            {
+              "id": "46a69823-97d4-46fa-81a7-c6406d8ed612",
+              "name": "state",
+              "value": "={{ $json.state }}",
+              "type": "string"
+            },
+            {
+              "id": "c8c6db4f-53b2-45c7-b511-6f7767cfacb1",
+              "name": "city",
+              "value": "={{ $json.city }}",
+              "type": "string"
+            },
+            {
+              "id": "200aeb84-75fd-4aef-9b2a-f723f296097d",
+              "name": "gender",
+              "value": "={{ $json.gender }}",
+              "type": "string"
+            },
+            {
+              "id": "6b21f629-c014-4373-b26e-bef78dd056fc",
+              "name": "tenure_months",
+              "value": "={{ $json.tenure_months }}",
+              "type": "number"
+            },
+            {
+              "id": "c3048b21-ef43-46ca-add7-4d0c3215127d",
+              "name": "monthly_charges",
+              "value": "={{ $json.monthly_charges }}",
+              "type": "number"
+            },
+            {
+              "id": "1bf4299f-f906-47f8-9be8-25a86c10f39d",
+              "name": "total_charges",
+              "value": "={{ $json.total_charges }}",
+              "type": "number"
+            },
+            {
+              "id": "ebdc70a5-464d-462e-ade9-73d195b7735b",
+              "name": "churn_score",
+              "value": "={{ $json.churn_score }}",
+              "type": "number"
+            },
+            {
+              "id": "836e397a-58fb-4847-9b02-36bd8a7d0aba",
+              "name": "churn_status",
+              "value": "={{ $json.churn_status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        -144
+      ],
+      "id": "53d60664-eaff-4e1b-adc4-5f6408f97872",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * from high_risk_customers",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        -144
+      ],
+      "id": "b807db1c-d8f6-4233-a3b1-32f2b363831e",
+      "name": "High_Risk_Customers",
+      "credentials": {
+        "mySql": {
+          "id": "9z8Sy92KBSvwO5pj",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM cohort_analysis",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        112
+      ],
+      "id": "815aa21a-ea5b-4a5d-832d-b45c520ad183",
+      "name": "cohort analysis",
+      "credentials": {
+        "mySql": {
+          "id": "9z8Sy92KBSvwO5pj",
+          "name": "MySQL account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0eb124b1-f50d-4bcb-9d82-5ce502d26514",
+              "name": "cohort_group",
+              "value": "={{ $json.cohort_group }}",
+              "type": "string"
+            },
+            {
+              "id": "ce919e76-195a-4921-b289-82f78257d00d",
+              "name": "total_customers",
+              "value": "={{ $json.total_customers }}",
+              "type": "number"
+            },
+            {
+              "id": "c6278a25-3a39-4345-af26-2e560674e377",
+              "name": "avg_risk_score",
+              "value": "={{ $json.avg_risk_score }}",
+              "type": "number"
+            },
+            {
+              "id": "887df284-0ddb-429e-9f5a-381e599cae5b",
+              "name": "actual_churn",
+              "value": "={{ $json.actual_churn }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        112
+      ],
+      "id": "5c8b4ff2-895f-458f-b8e3-a3567e1cd62c",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -144
+      ],
+      "id": "fa391b9c-6806-479e-b1d6-5ab4a42d3d4b",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "sendTo": "ahmadmunirsheikh13@gmail.com",
+        "subject": "High Risk Customers Alert!",
+        "emailType": "text",
+        "message": "=This Email is an alert for customer services. Following  is the list of customers who are at high risk.\n{{ $json.data.map(row => \n  \"•Customer ID: \" + row.customerid + \n  \" | Location: \" + row.city + \", \" + row.state + \n  \" | Gender: \" + row.gender + \n  \" | Tenure: \" + row.tenure_months + \" months\" +\n  \" | Monthly Charges: \" + row.monthly_charges + \n  \" | Total Charges: \" + row.total_charges + \n  \" | Churn Score: \" + row.churn_score + \n  \" | Status: \" + row.churn_status\n).join('\\n\\n') }}  . Regards IT Department",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        -144
+      ],
+      "id": "21bcf671-fc02-4671-8700-e034a3596977",
+      "name": "Send a message",
+      "webhookId": "b4b81152-933a-4336-874c-7151015e0b18",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "12wuKQN9IDPf82eV",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1J9dgfvK5yZhog73hmaEBEfC_Bwav-wEfV7OHm_nkvIU",
+          "mode": "list",
+          "cachedResultName": "High_Risk",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1J9dgfvK5yZhog73hmaEBEfC_Bwav-wEfV7OHm_nkvIU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1J9dgfvK5yZhog73hmaEBEfC_Bwav-wEfV7OHm_nkvIU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "customerid"
+          ],
+          "schema": [
+            {
+              "id": "customerid",
+              "displayName": "customerid",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "country",
+              "displayName": "country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "city",
+              "displayName": "city",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "gender",
+              "displayName": "gender",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tenure_months",
+              "displayName": "tenure_months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "monthly_charges",
+              "displayName": "monthly_charges",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_charges",
+              "displayName": "total_charges",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "churn_score",
+              "displayName": "churn_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "churn_status",
+              "displayName": "churn_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        -144
+      ],
+      "id": "19f28701-4c01-4db5-8605-5edcbcd27542",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "33q2rFxot4jEcFVt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1apuCskR86bY3Xr9jeCmNZN-oAgt7OZqteECiqzSKPJA",
+          "mode": "list",
+          "cachedResultName": "cohort_analysis",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1apuCskR86bY3Xr9jeCmNZN-oAgt7OZqteECiqzSKPJA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1apuCskR86bY3Xr9jeCmNZN-oAgt7OZqteECiqzSKPJA/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "cohort_group": "={{ $json.cohort_group }}",
+            "total_customers": "={{ $json.total_customers }}",
+            "avg_risk_score": "={{ $json.avg_risk_score }}",
+            "actual_churn": "={{ $json.actual_churn }}"
+          },
+          "matchingColumns": [
+            "cohort_group"
+          ],
+          "schema": [
+            {
+              "id": "cohort_group",
+              "displayName": "cohort_group",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_customers",
+              "displayName": "total_customers",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "avg_risk_score",
+              "displayName": "avg_risk_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "actual_churn",
+              "displayName": "actual_churn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        112
+      ],
+      "id": "b7bc3ed5-9e91-4c2c-863b-a79fa3c638cb",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "33q2rFxot4jEcFVt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "adddffe3-68f3-4c1b-96e6-a1fa469987c5",
+              "name": "tenure_months",
+              "value": "={{ $json.tenure_months }}",
+              "type": "number"
+            },
+            {
+              "id": "a3c14ec1-0851-4666-b8db-f976b31797ab",
+              "name": "monthly_revenue",
+              "value": "={{ $json.monthly_revenue }}",
+              "type": "number"
+            },
+            {
+              "id": "add3f89f-a0b7-4376-b8e2-1a4836ecb9dd",
+              "name": "total_revenue",
+              "value": "={{ $json.total_revenue }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        160,
+        352
+      ],
+      "id": "ae2d28f5-c0e5-4d96-b58f-e488a3211d25",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1sSrX-5IkFiuxHUojbdJzkhCQ1p8ckqqiDzQ8VU10oF0",
+          "mode": "list",
+          "cachedResultName": "Monthly_Revenue",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sSrX-5IkFiuxHUojbdJzkhCQ1p8ckqqiDzQ8VU10oF0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sSrX-5IkFiuxHUojbdJzkhCQ1p8ckqqiDzQ8VU10oF0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "tenure_months": "={{ $json.tenure_months }}",
+            "total_revenue": "={{ $json.total_revenue }}",
+            "monthly_revenue": "={{ $json.monthly_revenue }}"
+          },
+          "matchingColumns": [
+            "tenure_months"
+          ],
+          "schema": [
+            {
+              "id": "tenure_months",
+              "displayName": "tenure_months",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "monthly_revenue",
+              "displayName": "monthly_revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_revenue",
+              "displayName": "total_revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        352
+      ],
+      "id": "a7bf3d96-33c4-486f-8dbf-7cd644b2b2be",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "33q2rFxot4jEcFVt",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Telco Customer Churn Prediction\n**1. High Risk Customer Alert** \n**2. Cohort Analysis**\n**3. Revenue Generation**",
+        "width": 336
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -752,
+        -64
+      ],
+      "typeVersion": 1,
+      "id": "1bf144e1-091e-458d-9a08-c0e30c0f4e6b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT * FROM cumulative_revenue",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.5,
+      "position": [
+        -112,
+        352
+      ],
+      "id": "b4edc327-f982-43ee-b9aa-b0fc6fdadfe9",
+      "name": "Cumulative Revenue",
+      "credentials": {
+        "mySql": {
+          "id": "9z8Sy92KBSvwO5pj",
+          "name": "MySQL account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "High_Risk_Customers",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "cohort analysis",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Cumulative Revenue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High_Risk_Customers": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cohort analysis": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cumulative Revenue": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cfd23bde-03b1-4e0a-a821-e60732b74ea8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "03533b881774edeb93e93e61f981c166c03a779669e6da923d1d503ac694759b"
+  },
+  "id": "Y5KQSHXhMNh3AITc",
+  "tags": []
+}
