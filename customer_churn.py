@@ -39,4 +39,9 @@ print(f"Lower Bound: {Lower_bound}")
 print(f"Upper Bound: {Upper_bound}")    
 # Creating new column for risk based on churn score
 df['churn_status']=pd.cut(df['churn_score'],bins=[-1,Q1,Q3,float('inf')],labels=['Low Risk','Medium Risk','High Risk'])
-df.to_csv('Cleaned_Telco_customer_churn.csv',index=False)
+df['churn_status'] = (df['churn_status'] .astype(str).str.strip())
+print(df['churn_status'].unique())
+print(df['gender'].isnull().sum())  
+df['gender']=df['gender'].fillna('Unknown')
+# Export with correct line endings
+df.to_csv('Cleaned_Telco_customer_churn.csv',index=False,encoding='utf-8',lineterminator='\n')

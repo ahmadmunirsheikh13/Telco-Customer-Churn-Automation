@@ -53,9 +53,8 @@ group by churn_status;
  --  2- Active customers with highest churn risk score
  CREATE OR REPLACE VIEW high_risk_customers as
  SELECT customerid,country,state,city,gender,tenure_months,monthly_charges,total_charges,churn_score,churn_status
- from telco_churn 
- where churn_value=0 AND churn_score>=80
- ORDER BY churn_score DESC;
+ from telco_churn
+ where churn_value=0 and churn_status= 'High Risk';
  SELECT * FROM  high_risk_customers;
  -- 3- Filtering out senior citizens who are still in network 
 SELECT customerid,gender,tenure_months,contract,monthly_charges,churn_status 
